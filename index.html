@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Magic Chess Match Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    input {
+      font-size: 16px;
+      padding: 8px;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #e74c3c; /* merah */
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: 10px;
+      vertical-align: middle;
+      user-select: none;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      text-align: center;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px 5px;
+      vertical-align: middle;
+      word-wrap: break-word;
+      min-width: 90px;
+    }
+    th {
+      background: #f0f0f0;
+      font-weight: bold;
+    }
+    .center-row {
+      font-weight: bold;
+      letter-spacing: 0.3em;
+      font-size: 18px;
+      background: #e2e2e2;
+      user-select: none;
+    }
+    td.editable {
+      background: #fffbea;
+      cursor: text;
+    }
+    td.editable:empty:before {
+      content: attr(data-placeholder);
+      color: #aaa;
+      font-style: normal;
+      user-select: none;
+    }
+    td.readonly {
+      background: #f7f7f7;
+      user-select: none;
+      cursor: default;
+    }
+    td.placeholder {
+      color: #999;
+      font-style: normal;
+    }
+
+    /* Background warna round */
+    .round1 td {
+      background-color: #ffb3b3; /* merah pastel */
+      color: white;
+    }
+    .round2 td {
+      background-color: #ffb3b3; /* merah pastel */
+      color: white;
+    }
+    .round3 td {
+      background-color: #99e699; /* hijau pastel */
+      color: white;
+    }
+    .round4 td {
+      background-color: #ffb3b3; /* merah pastel */
+      color: white;
+    }
+    .round5 td {
+      background-color: #99e699; /* hijau pastel */
+      color: white;
+    }
+    .round6 td {
+      background-color: #99c2ff; /* biru pastel */
+      color: white;
+    }
+    .round7 td {
+      background-color: #99e699; /* hijau pastel */
+      color: white;
+    }
+
+    /* Round 5 p8 kolom editable tulisan putih */
+    #r5p8 {
+      background-color: #99e699 !important;
+      color: white !important;
+    }
+    /* Round 1 p8 vs editable false */
+    #r1p8, #r1me {
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Masukkan nama p8 (musuh pertama/mantan pertama):</h2>
+  <input type="text" id="p8name" placeholder="Contoh: P8">
+  <button id="resetBtn">Reset</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Me Vs</th>
+        <th>p8 Vs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="center-row"> <td colspan="3">C R E E P  R O U N D</td> </tr>
+
+      <tr class="round1">
+        <td>ROUND 1</td>
+        <td id="r1me" class="readonly">Me Vs</td>
+        <td id="r1p8" class="readonly">p8 Vs Me</td>
+      </tr>
+
+      <tr class="round2">
+        <td>ROUND 2</td>
+        <td id="r2me" class="editable" contenteditable="true" data-placeholder="Me Vs"></td>
+        <td id="r2p8" class="editable" contenteditable="true" data-placeholder="p8 Vs"></td>
+      </tr>
+
+      <tr class="round3">
+        <td>ROUND 3</td>
+        <td id="r3me" class="readonly placeholder" data-placeholder="-"></td>
+        <td id="r3p8" class="editable" contenteditable="true" data-placeholder="p8 Vs"></td>
+      </tr>
+
+      <tr class="center-row"> <td colspan="3">F A T E  B O X</td> </tr>
+
+      <tr class="round4">
+        <td>ROUND 4</td>
+        <td id="r4me" class="editable" contenteditable="true" data-placeholder="Me Vs"></td>
+        <td id="r4p8" class="editable" contenteditable="true" data-placeholder="p8 Vs"></td>
+      </tr>
+
+      <tr class="round5">
+        <td>ROUND 5</td>
+        <td id="r5me" class="readonly placeholder" data-placeholder="Me Vs"></td>
+        <td id="r5p8" class="editable" contenteditable="true" data-placeholder="musuh kamu di ronde 3 vs ..."></td>
+      </tr>
+
+      <tr class="center-row"> <td colspan="3">C R E E P  R O U N D</td> </tr>
+
+      <tr class="round6">
+        <td>ROUND 6</td>
+        <td id="r6me" class="readonly placeholder" data-placeholder="Me Vs"></td>
+        <td id="r6p8" class="editable" contenteditable="true" data-placeholder="p8 Vs"></td>
+      </tr>
+
+      <tr class="round7">
+        <td>ROUND 7</td>
+        <td id="r7me" class="readonly placeholder" data-placeholder="Me Vs"></td>
+        <td id="r7p8" class="readonly placeholder" data-placeholder="p8 Vs"></td>
+      </tr>
+    </tbody>
+  </table>
+
+<script>
+  const p8Input = document.getElementById('p8name');
+
+  const r1me = document.getElementById('r1me');
+  const r1p8 = document.getElementById('r1p8');
+
+  const r2me = document.getElementById('r2me');
+  const r2p8 = document.getElementById('r2p8');
+
+  const r3me = document.getElementById('r3me');
+  const r3p8 = document.getElementById('r3p8');
+
+  const r4me = document.getElementById('r4me');
+  const r4p8 = document.getElementById('r4p8');
+
+  const r5me = document.getElementById('r5me');
+  const r5p8 = document.getElementById('r5p8');
+
+  const r6me = document.getElementById('r6me');
+  const r6p8 = document.getElementById('r6p8');
+
+  const r7me = document.getElementById('r7me');
+  const r7p8 = document.getElementById('r7p8');
+
+  const resetBtn = document.getElementById('resetBtn');
+
+  // Update round 1 when p8 name input changes
+  function updateRound1() {
+    const p8name = p8Input.value.trim() || 'p8';
+    r1me.textContent = 'Me Vs';
+    r1p8.textContent = p8name + ' Vs Me';
+  }
+
+  // Update round 3 Me Vs from round 2 p8 Vs
+  function updateRound3me() {
+    const val = r2p8.textContent.trim();
+    r3me.textContent = val ? val : '-';
+  }
+  // Update round 3 p8 Vs editable, no auto update
+
+  // Update round 5 Me Vs from round 4 p8 Vs (readonly)
+  function updateRound5me() {
+    const val = r4p8.textContent.trim();
+    r5me.textContent = val ? val : '';
+    r5me.classList.toggle('placeholder', !val);
+  }
+
+  // Update round 6 Me Vs from round 5 p8 Vs (readonly)
+  function updateRound6me() {
+    const val = r5p8.textContent.trim();
+    r6me.textContent = val ? val : '';
+    r6me.classList.toggle('placeholder', !val);
+  }
+
+  // Update round 7 Me Vs from round 6 p8 Vs (readonly)
+  function updateRound7me() {
+    const val = r6p8.textContent.trim();
+    r7me.textContent = val ? val : '';
+    r7me.classList.toggle('placeholder', !val);
+  }
+  // Update round 7 p8 Vs from round 6 Me Vs (readonly)
+  function updateRound7p8() {
+    const val = r6me.textContent.trim();
+    r7p8.textContent = val ? val : '';
+    r7p8.classList.toggle('placeholder', !val);
+  }
+
+  // Attach events to update linked cells on input
+  p8Input.addEventListener('input', () => {
+    updateRound1();
+  });
+
+  r2p8.addEventListener('input', () => {
+    updateRound3me();
+  });
+
+  r4p8.addEventListener('input', () => {
+    updateRound5me();
+  });
+
+  r5p8.addEventListener('input', () => {
+    updateRound6me();
+  });
+
+  r6p8.addEventListener('input', () => {
+    updateRound7me();
+  });
+
+  r6me.addEventListener('input', () => {
+    updateRound7p8();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    p8Input.value = '';
+    r1me.textContent = 'Me Vs';
+    r1p8.textContent = 'p8 Vs Me';
+
+    [r2me, r2p8, r3p8, r4me, r4p8, r5p8, r6p8].forEach(td => {
+      td.textContent = '';
+      td.classList.remove('placeholder');
+    });
+
+    r3me.textContent = '-';
+    r3me.classList.add('placeholder');
+
+    r5me.textContent = '';
+    r5me.classList.add('placeholder');
+
+    r6me.textContent = '';
+    r6me.classList.add('placeholder');
+
+    r7me.textContent = '';
+    r7me.classList.add('placeholder');
+
+    r7p8.textContent = '';
+    r7p8.classList.add('placeholder');
+  });
+
+  // Initialize on load
+  window.onload = () => {
+    resetBtn.click();
+    updateRound1();
+  };
+</script>
+
+</body>
+</html>
